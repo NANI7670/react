@@ -1,0 +1,67 @@
+/* Book background image
+body {
+    margin: 0;
+    padding: 0;
+    background: url('/Users/apple/Desktop/project/mylibrary/public/images/piclumen-1752324137985.png') no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  /* Centered login container */
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  /* White box for the form */
+  .login-box {
+    background: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+    padding: 40px 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    width: 90%;
+  }
+  
+  /* Heading inside box */
+  .login-box h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #333;
+  }
+  
+  /* Input fields */
+  .login-box input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+  }
+  
+  .login-box input:focus {
+    outline: none;
+    border-color: #5e35b1;
+    box-shadow: 0 0 8px rgba(94, 53, 177, 0.4);
+  }
+  
+  /* Button style */
+  .login-box button {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(to right, #5e35b1, #7e57c2);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .login-box button:hover {
+    background: linear-gradient(to right, #7e57c2, #5e35b1);
+  }

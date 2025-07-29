@@ -1,0 +1,67 @@
+/* Dark Neon Style */
+body {
+  background-color: #121212;
+  color: #ffffff;
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar {
+  background-color: #1f1f1f;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  box-shadow: 0 2px 10px #0ff;
+}
+
+.navbar input,
+.navbar select {
+  padding: 8px 10px;
+  border: 1px solid #0ff;
+  background-color: #2c2c2c;
+  color: #fff;
+  border-radius: 5px;
+}
+
+.table-container {
+  margin: 20px;
+  padding: 20px;
+  background-color: #1e1e1e;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+}
+
+table {
+  width: 100%;
+
+  border-collapse: collapse;
+  margin-top: 70px;
+  margin-left: 20px;
+  color: #000000;
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #333;
+}
+
+th {
+  background-color: #2a2a2a;
+  color: #0ff;
+}
+
+button {
+  padding: 6px 12px;
+  margin: 0 3px;
+  border: none;
+  border-radius: 5px;
+  color: #000;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.edit-btn { background-color: #fbbc05; }
+.delete-btn { background-color: #ea4335; }
+.purchase-btn { background-color: #34a853; }

@@ -1,0 +1,167 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to right, #e3f2fd, #fce4ec);
+    color: #333;
+  }
+  
+  .book-list-container {
+    width: 100%;
+    min-height: 100vh;
+    padding: 30px;
+    box-sizing: border-box;
+  }
+  
+  .top-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+    animation: slideIn 0.6s ease-in-out;
+  }
+  
+  .top-bar h2 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+  }
+  
+  .controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  
+  .controls input,
+  .controls select {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    min-width: 220px;
+  }
+  
+  .add-button {
+    background-color: #e91e63;
+    color: white;
+    font-weight: bold;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .add-button:hover {
+    background-color: #ad1457;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    animation: fadeIn 0.5s ease-in;
+  }
+  
+  th, td {
+    padding: 14px 18px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.95rem;
+  }
+  
+  th {
+    background-color: #0d47a1;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  tr:hover {
+    background-color: #f1f1f1;
+    transition: background-color 0.2s ease-in;
+  }
+  
+  button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.3s ease;
+  }
+  
+  button:hover {
+    transform: scale(1.05);
+  }
+  
+  button:first-of-type {
+    background-color: #2196f3;
+    color: white;
+  }
+  
+  button:last-of-type,
+  .delete-btn {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  @media (max-width: 768px) {
+    .top-bar {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15px;
+    }
+  
+    .controls {
+      width: 100%;
+      flex-direction: column;
+    }
+  
+    table, thead, tbody, th, td, tr {
+      display: block;
+    }
+  
+    tr {
+      margin-bottom: 1rem;
+      border-bottom: 2px solid #ddd;
+    }
+  
+    td {
+      position: relative;
+      padding-left: 50%;
+      text-align: right;
+    }
+  
+    td::before {
+      content: attr(data-label);
+      position: absolute;
+      left: 0;
+      padding-left: 20px;
+      font-weight: bold;
+      color: #666;
+      text-align: left;
+    }
+  
+    th {
+      display: none;
+    }
+  }
+  
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  

@@ -1,0 +1,58 @@
+/* BookForm.css */
+
+.book-form-container {
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  padding: 30px;
+  border-radius: 20px;
+  width: 400px;
+  margin: 30px auto;
+  color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 1s ease-in;
+}
+
+.book-form-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.book-form-container input,
+.book-form-container select {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+}
+
+.book-form-container input:focus,
+.book-form-container select:focus {
+  outline: none;
+  box-shadow: 0 0 5px #fff;
+}
+
+.book-form-container button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  background: #ff7eb3;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.book-form-container button:hover {
+  background: #ff65a3;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}

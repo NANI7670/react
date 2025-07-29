@@ -1,24 +1,32 @@
-import logo from './logo.svg';
-import './App.css';
+// App.js ✅ FIXED
+import { Routes, Route } from 'react-router-dom';
+import LibrarianLogin from './components/LibrarianLogin';
+import LibrarianRegister from './components/LibrarianRegister';
+import LibrarianDashboard from './components/LibrarianDashboard';
+import BookForm from './components/BookForm';
+import BookList from './components/BookList';
+import StudentRegister from './components/StudentRegister';
+import StudentLogin from './components/StudentLogin';
+import StudentDashboard from './components/StudentDashboard.js';
+import StudentProfile from './components/StudentProfile';
+import Librarianpurches from './components/Librarianpurches';
+import StudentPurchases from './components/StudentPurchases';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Routes>
+      <Route path="login/" element={<LibrarianLogin />} />
+      <Route path="/" element={<LibrarianRegister />} />
+      <Route path="/dashboard" element={<LibrarianDashboard />} />
+      <Route path="/add-book" element={<BookForm />} />
+      <Route path="/books" element={<BookList />} />
+      <Route path="/studentregister" element={<StudentRegister />} />
+      <Route path="/studentlogin" element={<StudentLogin />} />
+       <Route path="/studentdashboard" element={<StudentDashboard />} />
+       <Route path="/studentprofile" element={<StudentProfile />} />
+       <Route path="/librarianpurches/:id" element={<Librarianpurches />} />
+       <Route path="/studentpurchases" element={<StudentPurchases />} />
+    </Routes>
   );
 }
 
