@@ -14,27 +14,30 @@ const StudentProfile = () => {
     profile_pic: null,
   });
 
-  const studentId = localStorage.getItem("studentId");
-
-  const fetchProfile = async () => {
+  const fetchProfile = async (stuId) => {
     try {
-      const response = await axios.get(`http://localhost:8000/api/register/${studentId}/`);
-      setProfileData(response.data);
+      const response = await axios.get(`http://localhost:8000/api/register/${stuId}/`);
+      setProfileData(response.data.data);
+      
       setUpdatedData({
-        first_name: response.data.first_name,
-        last_name: response.data.last_name,
-        email: response.data.email,
-        department: response.data.department_id || response.data.department,
+        first_name: response.data.data.first_name,
+        last_name: response.data.data.last_name,
+        email: response.data.data.email,
+        department: response.data.data.department_id || response.data.data.department,
         profile_pic: null,
       });
+      
     } catch (error) {
       console.error("Failed to fetch profile:", error);
     }
   };
 
   useEffect(() => {
+    const studentId = JSON.parse(localStorage.getItem("student"));
+  const stuId = studentId.id
+  
     if (studentId) {
-      fetchProfile();
+      fetchProfile(stuId);
       fetchDepartments();
     } else {
       console.warn("Student ID not found in localStorage");
@@ -105,7 +108,7 @@ const StudentProfile = () => {
       </div>
 
       <div className="profile-right">
-        {["first_name", "last_name", "email"].map((field) => (
+        {["first_name", "last_name", "email", "student_id"].map((field) => (
           <div className="form-group" key={field}>
             <label>{field.replace("_", " ")}:</label>
             {isEditing ? (

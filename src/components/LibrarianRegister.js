@@ -34,7 +34,7 @@ function LibrarianRegister() {
         <input name="password" placeholder="Password" type="password" onChange={handleChange} /><br />
         <input name="confirm_password" placeholder="Confirm Password" type="password" onChange={handleChange} /><br />
         <button type="submit">Register</button>
-        <p>Already registered? <a href="/librarianlogin">Login here</a></p>
+        <p>Already registered? <a href="/login">Login here</a></p>
       </form>
     </div>
   );

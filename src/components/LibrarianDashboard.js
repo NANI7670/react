@@ -66,7 +66,7 @@ function LibrarianDashboard() {
 
   const handleLogout = () => {
     localStorage.removeItem('librarianToken');
-    navigate('/librarianlogin');
+    navigate('/login');
   };
 
   const filteredBooks = books.filter(book => {

@@ -8,7 +8,7 @@ function LibrarianLogin() {
   const handleLogin = async e => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8000/api/librarianlogin/', { email, password });
+      await axios.post('http://localhost:8000/api/login/', { email, password });
       alert('Logged in!');
       window.location.href = '/librariandashboard';
     } catch (err) {

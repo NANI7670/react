@@ -6,7 +6,7 @@ function LibrarianLogout() {
     axios.post('http://localhost:8000/api/librarianlogout/')
       .then(() => {
         alert('Logged out!');
-        window.location.href = '/librarianlogin';
+        window.location.href = '/login';
       });
   }, []);
 
