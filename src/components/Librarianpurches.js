@@ -13,7 +13,9 @@ function LibrarianPurchase() {
   const [message, setMessage] = useState('');
 
   const handleStudentSearch = () => {
-    axios.get(`http://localhost:8000/api/student/${studentID}/`)
+    console.log(studentID, '----------studentID-------');
+    
+    axios.post(`http://localhost:8000/api/student/${studentID}/`)
       .then(res => {
         setStudentData(res.data);
         setMessage('');
