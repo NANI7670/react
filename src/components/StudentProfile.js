@@ -1,162 +1,146 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import '../styles/StudentProfile.css';
 
-const StudentProfile = () => {
-  const [profileData, setProfileData] = useState(null);
-  const [departments, setDepartments] = useState([]);
-  const [isEditing, setIsEditing] = useState(false);
-  const [updatedData, setUpdatedData] = useState({
-    first_name: '',
-    last_name: '',
-    email: '',
-    department: '',
-    profile_pic: null,
-  });
-
-  const fetchProfile = async (stuId) => {
-    try {
-      const response = await axios.get(`http://localhost:8000/api/register/${stuId}/`);
-      setProfileData(response.data.data);
-      
-      setUpdatedData({
-        first_name: response.data.data.first_name,
-        last_name: response.data.data.last_name,
-        email: response.data.data.email,
-        department: response.data.data.department_id || response.data.data.department,
-        profile_pic: null,
-      });
-      
-    } catch (error) {
-      console.error("Failed to fetch profile:", error);
-    }
-  };
+function StudentPurchases() {
+  const [studentData, setStudentData] = useState(null);
+  const [borrowedBooks, setBorrowedBooks] = useState([]);
+  const [selectedBookId, setSelectedBookId] = useState('');
+  const [reviewText, setReviewText] = useState({});
+  const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
-    const studentId = JSON.parse(localStorage.getItem("student"));
-  const stuId = studentId.id
-  
-    if (studentId) {
-      fetchProfile(stuId);
-      fetchDepartments();
-    } else {
-      console.warn("Student ID not found in localStorage");
+    const student = JSON.parse(localStorage.getItem('student'));
+    if (!student || !student.student_id) {
+      alert("Student not logged in.");
+      return;
     }
-  }, []);
 
-  const fetchDepartments = async () => {
-    try {
-      const res = await axios.get('http://localhost:8000/api/departments/');
-      setDepartments(res.data);
-    } catch (err) {
-      console.error('Error fetching departments:', err);
-    }
+    axios.get(`http://localhost:8000/api/student/${student.student_id}/summary/`)
+      .then(res => {
+        setStudentData(res.data.student);
+        setBorrowedBooks(res.data.borrowed_books);
+      })
+      .catch(err => console.error(err));
+  }, [refresh]);
+
+  const handleBorrow = () => {
+    const student = JSON.parse(localStorage.getItem('student'));
+    axios.post('http://localhost:8000/api/borrow/', {
+      student_id: student.student_id,
+      book_id: selectedBookId
+    }).then(() => {
+      alert("Book Borrowed Successfully");
+      setRefresh(!refresh);
+    }).catch(err => {
+      alert(err.response.data.error);
+    });
   };
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === 'profile_pic') {
-      setUpdatedData({ ...updatedData, profile_pic: files[0] });
-    } else {
-      setUpdatedData({ ...updatedData, [name]: value });
-    }
+  const handleReturn = (borrow_id) => {
+    axios.post('http://localhost:8000/api/return/', {
+      borrow_id
+    }).then(() => {
+      alert("Book Returned Successfully");
+      setRefresh(!refresh);
+    }).catch(err => alert("Error returning book"));
   };
 
-  const handleSubmit = async () => {
-    const formData = new FormData();
-    formData.append('first_name', updatedData.first_name);
-    formData.append('last_name', updatedData.last_name);
-    formData.append('email', updatedData.email);
-    formData.append('department_id', updatedData.department);
-    if (updatedData.profile_pic) {
-      formData.append('profile_pic', updatedData.profile_pic);
+  const handleReviewSubmit = (borrow_id) => {
+    const review = reviewText[borrow_id];
+    if (!review || review.trim() === "") {
+      alert("Please enter a review before submitting.");
+      return;
     }
 
-    try {
-      await axios.put(`http://localhost:8000/api/register/${studentId}/`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      setIsEditing(false);
-      fetchProfile(); // refresh updated data
-    } catch (error) {
-      console.error('Update failed:', error);
-    }
+    axios.post('http://localhost:8000/api/submit_review/', {
+      borrow_id,
+      review
+    }).then(() => {
+      alert("Review submitted!");
+      setReviewText((prev) => ({ ...prev, [borrow_id]: '' }));
+    }).catch(err => {
+      alert("Error submitting review.");
+    });
   };
-
-  if (!profileData) return <p>Loading profile...</p>;
 
   return (
-    <div className="profile-card">
-      <div className="profile-left">
-        <img
-          src={
-            profileData.profile_pic
-              ? `http://localhost:8000${profileData.profile_pic}`
-              : 'https://via.placeholder.com/150'
-          }
-          alt="Profile"
-          className="profile-pic"
+    <div className="student-dashboard">
+      <nav className="navbar">
+        <h2>📚 Student Borrow Dashboard</h2>
+        <div>
+          <button onClick={() => window.location.href = '/studentdashboard'}>🏠 Home</button>
+          <button onClick={() => window.location.href = '/StudentProfile'}>👤 Profile</button>
+        </div>
+      </nav>
+
+      {studentData && (
+        <div className="student-info">
+          <p><strong>Student ID:</strong> {studentData.student_id}</p>
+          <p><strong>Name:</strong> {studentData.name}</p>
+          <p><strong>Department:</strong> {studentData.department}</p>
+        </div>
+      )}
+
+      <div>
+        <input
+          type="number"
+          placeholder="Enter Book ID to Borrow"
+          onChange={(e) => setSelectedBookId(e.target.value)}
         />
-        {isEditing && (
-          <input
-            type="file"
-            name="profile_pic"
-            accept="image/*"
-            onChange={handleChange}
-          />
-        )}
+        <button onClick={handleBorrow}>📘 Purchase</button>
       </div>
 
-      <div className="profile-right">
-        {["first_name", "last_name", "email", "student_id"].map((field) => (
-          <div className="form-group" key={field}>
-            <label>{field.replace("_", " ")}:</label>
-            {isEditing ? (
-              <input
-                type={field === "email" ? "email" : "text"}
-                name={field}
-                value={updatedData[field]}
-                onChange={handleChange}
-              />
-            ) : (
-              <p>{profileData[field]}</p>
-            )}
-          </div>
-        ))}
-
-        <div className="form-group">
-          <label>Department:</label>
-          {isEditing ? (
-            <select
-              name="department"
-              value={updatedData.department}
-              onChange={handleChange}
-            >
-              <option value="">Select Department</option>
-              {departments.map((dept) => (
-                <option key={dept.id} value={dept.id}>
-                  {dept.name}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <p>{profileData.department_name || profileData.department}</p>
-          )}
-        </div>
-
-        <div className="button-group">
-          {isEditing ? (
-            <>
-              <button className="save-btn" onClick={handleSubmit}>Save</button>
-              <button className="cancel-btn" onClick={() => setIsEditing(false)}>Cancel</button>
-            </>
-          ) : (
-            <button className="edit-btn" onClick={() => setIsEditing(true)}>Edit Profile</button>
-          )}
-        </div>
+      <div className="table-container">
+        <h3>Borrowed Books</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Book</th>
+              <th>Borrow Date</th>
+              <th>Due</th>
+              <th>Returned</th>
+              <th>Fine</th>
+              <th>Action</th>
+              <th>Review</th>
+            </tr>
+          </thead>
+          <tbody>
+            {borrowedBooks.map((b) => (
+              <tr key={b.id}>
+                <td>{b.book_title}</td>
+                <td>{b.borrow_date}</td>
+                <td>{b.return_date}</td>
+                <td>{b.returned ? '✅' : '❌'}</td>
+                <td>{b.fine}</td>
+                <td>
+                  {!b.returned && (
+                    <button onClick={() => handleReturn(b.id)}>Return Book</button>
+                  )}
+                </td>
+                <td>
+                  {b.returned ? (
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="Write a review"
+                        value={reviewText[b.id] || ''}
+                        onChange={(e) =>
+                          setReviewText({ ...reviewText, [b.id]: e.target.value })
+                        }
+                      />
+                      <button onClick={() => handleReviewSubmit(b.id)}>Submit</button>
+                    </div>
+                  ) : (
+                    <span>Return first</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
-};
+}
 
-export default StudentProfile;
+export default StudentPurchases;

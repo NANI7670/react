@@ -1,100 +1,144 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
 
 function LibrarianPurchase() {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const bookIdFromQuery = queryParams.get('bookId');
-
-  const [studentId, setStudentId] = useState('');
-  const [summary, setSummary] = useState(null);
-  const [bookDetails, setBookDetails] = useState(null);
+  const [studentID, setStudentID] = useState('');
+  const [studentData, setStudentData] = useState(null);
+  const [departments, setDepartments] = useState([]);
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [books, setBooks] = useState([]);
+  const [filteredBooks, setFilteredBooks] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedBook, setSelectedBook] = useState(null);
   const [message, setMessage] = useState('');
 
-  const fetchStudentSummary = async () => {
-    try {
-      const res = await axios.get(`/api/student/${studentId}/summary/`);
-      setSummary(res.data);
-      setMessage('');
-    } catch (err) {
-      setMessage(err.response?.data?.error || 'Error fetching student info');
-    }
-  };
-
-  const fetchBookDetails = async () => {
-    try {
-      const res = await axios.get(`/api/books/${bookIdFromQuery}/`);
-      setBookDetails(res.data);
-    } catch (err) {
-      setMessage('Error fetching book details');
-    }
-  };
-
-  const handleBorrow = async () => {
-    try {
-      const res = await axios.post('/api/borrow/', {
-        student_id: studentId,
-        book_id: bookIdFromQuery,
+  const handleStudentSearch = () => {
+    axios.get(`http://localhost:8000/api/student/${studentID}/`)
+      .then(res => {
+        setStudentData(res.data);
+        setMessage('');
+        fetchDepartments();
+      })
+      .catch(() => {
+        setMessage('❌ Student not found');
+        setStudentData(null);
       });
-      setMessage(res.data.message);
-      fetchStudentSummary();
-    } catch (err) {
-      setMessage(err.response?.data?.error || 'Borrow failed');
-    }
   };
 
-  useEffect(() => {
-    if (bookIdFromQuery) {
-      fetchBookDetails();
-    }
-  }, [bookIdFromQuery]);
+  const fetchDepartments = () => {
+    axios.get('http://localhost:8000/api/departments/')
+      .then(res => setDepartments(res.data))
+      .catch(err => console.error(err));
+  };
+
+  const fetchBooks = () => {
+    axios.get('http://localhost:8000/api/books/')
+      .then(res => {
+        const deptBooks = res.data.filter(book => book.department_name === selectedDepartment);
+        setBooks(deptBooks);
+        setFilteredBooks(deptBooks);
+      })
+      .catch(err => console.error(err));
+  };
+
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+    const filtered = books.filter(book =>
+      book.title.toLowerCase().includes(e.target.value.toLowerCase())
+    );
+    setFilteredBooks(filtered);
+  };
+
+  const handleBookClick = (book) => {
+    setSelectedBook(book);
+  };
+
+  const handlePurchase = () => {
+    if (!selectedBook) return alert("Please select a book to purchase.");
+    axios.post(`http://localhost:8000/api/borrow/`, {
+      student_id: studentID,
+      book_id: selectedBook.id
+    }).then(() => {
+      alert("✅ Book Borrowed Successfully");
+      setSelectedBook(null);
+      fetchBooks(); // refresh book list
+    }).catch(err => {
+      const error = err.response?.data?.error || '❌ Something went wrong';
+      alert(error);
+    });
+  };
 
   return (
-    <div className="p-4 bg-white shadow rounded-xl">
-      <h2 className="text-xl font-bold mb-4">📚 Book Purchase</h2>
+    <div style={{ padding: '20px' }}>
+      <h2>📖 Librarian - Purchase Page</h2>
 
-      <div className="flex gap-2 mb-4">
+      <div>
         <input
           type="text"
-          placeholder="Enter Student ID"
-          className="border p-2 rounded"
-          value={studentId}
-          onChange={(e) => setStudentId(e.target.value)}
+          placeholder="Enter Student ID (e.g. CO123)"
+          value={studentID}
+          onChange={(e) => setStudentID(e.target.value)}
         />
-        <button onClick={fetchStudentSummary} className="bg-blue-500 text-white px-4 rounded">
-          Search
-        </button>
+        <button onClick={handleStudentSearch}>🔍 Search Student</button>
       </div>
 
-      {summary && (
-        <div className="border p-3 rounded bg-gray-100 mb-4">
-          <p><strong>Student:</strong> {summary.student_name}</p>
-          <p>📕 Total Borrowed: {summary.total_borrowed}</p>
-          <p>📘 Returned: {summary.returned_books}</p>
-          <p>📙 Pending: {summary.currently_borrowed}</p>
-          <p>💸 Total Fine: ₹{summary.total_fine}</p>
+      {message && <p style={{ color: 'red' }}>{message}</p>}
+
+      {studentData && (
+        <>
+          <div style={{ marginTop: '20px' }}>
+            <h3>🎓 Student Info</h3>
+            <p><strong>ID:</strong> {studentData.student_id}</p>
+            <p><strong>Name:</strong> {studentData.first_name} {studentData.last_name}</p>
+            <p><strong>Email:</strong> {studentData.email}</p>
+            <p><strong>Department:</strong> {studentData.department_name}</p>
+          </div>
+
+          <div style={{ marginTop: '20px' }}>
+            <h3>📂 Select Department</h3>
+            <select value={selectedDepartment} onChange={(e) => setSelectedDepartment(e.target.value)}>
+              <option value="">-- Choose Department --</option>
+              {departments.map(dept => (
+                <option key={dept.id} value={dept.name}>{dept.name}</option>
+              ))}
+            </select>
+            <button onClick={fetchBooks} disabled={!selectedDepartment}>📚 Load Books</button>
+          </div>
+        </>
+      )}
+
+      {books.length > 0 && (
+        <div style={{ marginTop: '20px' }}>
+          <h3>🔍 Search & Select Book</h3>
+          <input
+            type="text"
+            placeholder="Search books..."
+            value={searchQuery}
+            onChange={handleSearch}
+          />
+
+          <ul style={{ maxHeight: '200px', overflowY: 'auto' }}>
+            {filteredBooks.map(book => (
+              <li key={book.id} onClick={() => handleBookClick(book)} style={{
+                cursor: 'pointer',
+                backgroundColor: selectedBook?.id === book.id ? '#dff0d8' : 'transparent',
+                padding: '5px'
+              }}>
+                {book.title} ({book.available_copies} available)
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
-      {bookDetails && (
-        <div className="border p-3 rounded bg-green-50 mb-4">
-          <h3 className="text-lg font-semibold">Book to Purchase</h3>
-          <p><strong>Title:</strong> {bookDetails.title}</p>
-          <p><strong>Author:</strong> {bookDetails.author}</p>
-          <p><strong>Department:</strong> {bookDetails.department}</p>
-          <p><strong>Available:</strong> {bookDetails.available_copies}</p>
-          {bookDetails.available_copies > 0 ? (
-            <button onClick={handleBorrow} className="mt-2 bg-green-600 text-white px-4 py-1 rounded">
-              Confirm Borrow
-            </button>
-          ) : (
-            <p className="text-red-600 mt-2">Stock Over</p>
-          )}
+      {selectedBook && (
+        <div style={{ marginTop: '20px' }}>
+          <h3>🛒 Student Purchase</h3>
+          <p><strong>Book Title:</strong> {selectedBook.title}</p>
+          <p><strong>Department:</strong> {selectedBook.department_name}</p>
+          <button onClick={handlePurchase}>✅ Confirm Borrow</button>
         </div>
       )}
-
-      {message && <p className="mt-2 text-red-600">{message}</p>}
     </div>
   );
 }

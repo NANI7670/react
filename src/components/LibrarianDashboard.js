@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-
 function LibrarianDashboard() {
   const [books, setBooks] = useState([]);
   const [departments, setDepartments] = useState([]);
@@ -60,13 +59,13 @@ function LibrarianDashboard() {
       .catch(err => console.error('Update error:', err));
   };
 
-  const handlePurchase = (id) => {
-    navigate(`/Librarianpurches/${id}`);
-  };
-
   const handleLogout = () => {
     localStorage.removeItem('librarianToken');
     navigate('/login');
+  };
+
+  const handlePurchasePage = () => {
+    navigate('/librarianpurches/:id');
   };
 
   const filteredBooks = books.filter(book => {
@@ -77,6 +76,7 @@ function LibrarianDashboard() {
 
   return (
     <div className="librarian-dashboard">
+      {/* Navbar */}
       <nav className="navbar">
         <input
           type="text"
@@ -98,9 +98,11 @@ function LibrarianDashboard() {
         </select>
 
         <button onClick={() => navigate('/add-book')}>Add Book</button>
+        <button onClick={handlePurchasePage}>Purchase</button>
         <button onClick={handleLogout}>Logout</button>
       </nav>
 
+      {/* Book Table */}
       <table className="book-table">
         <thead>
           <tr>
@@ -153,7 +155,6 @@ function LibrarianDashboard() {
                     <td>
                       <button onClick={() => handleEditClick(book)}>Edit</button>
                       <button onClick={() => handleDelete(book.id)}>Delete</button>
-                      <button onClick={() => handlePurchase(book.id)}>Purchase</button> 
                     </td>
                   </>
                 )}
