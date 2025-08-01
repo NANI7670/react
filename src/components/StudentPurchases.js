@@ -8,10 +8,12 @@ function StudentPurchases() {
   const [reviewText, setReviewText] = useState({});
 
   useEffect(() => {
+    const student = JSON.parse(localStorage.getItem('student'));
+
     axios
-      .get('http://localhost:8000/api/student-purchases/', { withCredentials: true })
+      .get(`http://localhost:8000/api/student-purchases/${student.id}/`,)
       .then((res) => {
-        setPurchases(res.data);
+        setPurchases(res.data.data);
       })
       .catch((err) => {
         setError('Failed to fetch purchase data');

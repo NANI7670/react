@@ -11,12 +11,7 @@ function LibrarianPurchase() {
   const [message, setMessage] = useState('');
 
   const handleStudentSearch = () => {
-<<<<<<< HEAD
-    console.log(studentID, '----------studentID-------');
-    
-=======
     if (!studentID) return;
->>>>>>> 6230e10 (Updated register/login UI and CSS)
     axios.post(`http://localhost:8000/api/student/${studentID}/`)
       .then(res => {
         setStudentData(res.data);
