@@ -38,7 +38,15 @@ function LibrarianDashboard() {
 
   const handleEditClick = (book) => {
     setEditRowId(book.id);
-    setEditedBook({ ...book });
+    setEditedBook({
+      title: book.title,
+      author: book.author,
+      department: book.department,
+      publish_year: book.Publisher_year,
+      price: book.price,
+      total_books: book.total_copies,
+      available_books: book.available_copies
+    });
   };
 
   const handleEditChange = (e) => {
@@ -66,6 +74,10 @@ function LibrarianDashboard() {
 
   const handlePurchasePage = () => {
     navigate('/librarianpurches/:id');
+  };
+
+  const handleComplaintPage = () => {
+    navigate('/complaints');
   };
 
   const filteredBooks = books.filter(book => {
@@ -99,6 +111,7 @@ function LibrarianDashboard() {
 
         <button onClick={() => navigate('/add-book')}>Add Book</button>
         <button onClick={handlePurchasePage}>Purchase</button>
+        <button onClick={handleComplaintPage}>Complaint</button>
         <button onClick={handleLogout}>Logout</button>
       </nav>
 
@@ -125,7 +138,7 @@ function LibrarianDashboard() {
               <tr key={book.id}>
                 {editRowId === book.id ? (
                   <>
-                    <td><input name="title" value={editedBook.name} onChange={handleEditChange} /></td>
+                    <td><input name="title" value={editedBook.title} onChange={handleEditChange} /></td>
                     <td><input name="author" value={editedBook.author} onChange={handleEditChange} /></td>
                     <td>
                       <select name="department" value={editedBook.department} onChange={handleEditChange}>

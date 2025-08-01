@@ -16,7 +16,10 @@ function StudentDashboard() {
 
   useEffect(() => {
     const student = JSON.parse(localStorage.getItem('student'));
+<<<<<<< HEAD
     
+=======
+>>>>>>> 6230e10 (Updated register/login UI and CSS)
     const storedFavorites = JSON.parse(localStorage.getItem('favorites')) || [];
 
     setFavorites(storedFavorites);
@@ -84,19 +87,29 @@ function StudentDashboard() {
 
   const handleSendComplaint = (recipient) => {
     const student = JSON.parse(localStorage.getItem('student'));
+<<<<<<< HEAD
     console.log(student, '-----student-------');
+=======
+>>>>>>> 6230e10 (Updated register/login UI and CSS)
 
     // ✅ Corrected endpoint paths
     const endpoint =
       recipient === 'librarian'
+<<<<<<< HEAD
         ? 'http://localhost:8000/api/complaint/send/'
+=======
+        ? 'http://localhost:8000/api/complaint/librarian/'
+>>>>>>> 6230e10 (Updated register/login UI and CSS)
         : 'http://localhost:8000/api/complaint/admin/';
 
     axios
       .post(endpoint, {
         student_id: student.student_id,
         message: complaintText,
+<<<<<<< HEAD
         sender: student.id
+=======
+>>>>>>> 6230e10 (Updated register/login UI and CSS)
       })
       .then(() => {
         alert(`✅ Complaint sent to ${recipient}!`);

@@ -32,36 +32,31 @@ function StudentPurchases() {
 
     axios
       .post(`http://localhost:8000/api/student-purchases/${purchaseId}/review/`, { review })
-      .then((res) => {
-        alert('Review submitted');
+      .then(() => {
+        alert('✅ Review submitted successfully');
         setReviewText((prev) => ({ ...prev, [purchaseId]: '' }));
       })
       .catch((err) => {
         console.error('Review submission error:', err);
-        alert('Error submitting review');
+        alert('❌ Error submitting review');
       });
   };
 
-  const getStatus = (purchase) => {
-    if (purchase.submitted) return 'Submitted';
-    const purchasedDate = new Date(purchase.purchased_date);
-    const now = new Date();
-    const diff = Math.floor((now - purchasedDate) / (1000 * 60 * 60 * 24));
-    if (diff > 3) return `Fine: ₹${(diff - 3) * 5}`;
-    return 'Pending';
-  };
-
   return (
-    <div className="student-dashboard">
-      <h2>📚 Your Purchase History</h2>
-      {error && <p className="error">{error}</p>}
+    <div className="student-dashboard" style={{ padding: '20px' }}>
+      <h2>📚 Your Borrowed Books</h2>
+      {error && <p className="error" style={{ color: 'red' }}>{error}</p>}
 
-      <table>
+      <table border="1" cellPadding="10" style={{ width: '100%', marginTop: '20px' }}>
         <thead>
           <tr>
             <th>Book</th>
-            <th>Purchased On</th>
+            <th>Author</th>
+            <th>Department</th>
+            <th>Borrowed On</th>
+            <th>Returned On</th>
             <th>Status</th>
+            <th>Fine</th>
             <th>Review</th>
             <th>Submit</th>
           </tr>
@@ -70,13 +65,22 @@ function StudentPurchases() {
           {purchases.map((purchase) => (
             <tr key={purchase.id}>
               <td>{purchase.book_name}</td>
-              <td>{new Date(purchase.purchased_date).toLocaleDateString()}</td>
-              <td>{getStatus(purchase)}</td>
+              <td>{purchase.book_author}</td>
+              <td>{purchase.book_department}</td>
+              <td>{new Date(purchase.purchase_date).toLocaleDateString()}</td>
+              <td>
+                {purchase.submitted && purchase.submit_date
+                  ? new Date(purchase.submit_date).toLocaleDateString()
+                  : 'Not Returned'}
+              </td>
+              <td>{purchase.submitted ? '✅ Returned' : '📚 Not Returned'}</td>
+              <td>₹{purchase.fine}</td>
               <td>
                 <textarea
                   value={reviewText[purchase.id] || ''}
                   onChange={(e) => handleReviewChange(purchase.id, e.target.value)}
                   placeholder="Write a review..."
+                  rows={2}
                 />
               </td>
               <td>

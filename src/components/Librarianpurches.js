@@ -1,79 +1,98 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function LibrarianPurchase() {
   const [studentID, setStudentID] = useState('');
   const [studentData, setStudentData] = useState(null);
-  const [departments, setDepartments] = useState([]);
-  const [selectedDepartment, setSelectedDepartment] = useState('');
   const [books, setBooks] = useState([]);
-  const [filteredBooks, setFilteredBooks] = useState([]);
+  const [borrowedBooks, setBorrowedBooks] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedBook, setSelectedBook] = useState(null);
+  const [loadedBooks, setLoadedBooks] = useState([]);
   const [message, setMessage] = useState('');
 
   const handleStudentSearch = () => {
+<<<<<<< HEAD
     console.log(studentID, '----------studentID-------');
     
+=======
+    if (!studentID) return;
+>>>>>>> 6230e10 (Updated register/login UI and CSS)
     axios.post(`http://localhost:8000/api/student/${studentID}/`)
       .then(res => {
         setStudentData(res.data);
         setMessage('');
-        fetchDepartments();
+        fetchBooks();
+        fetchBorrowedBooks();
       })
       .catch(() => {
         setMessage('❌ Student not found');
         setStudentData(null);
+        setBorrowedBooks([]);
+        setBooks([]);
       });
-  };
-
-  const fetchDepartments = () => {
-    axios.get('http://localhost:8000/api/departments/')
-      .then(res => setDepartments(res.data))
-      .catch(err => console.error(err));
   };
 
   const fetchBooks = () => {
     axios.get('http://localhost:8000/api/books/')
-      .then(res => {
-        const deptBooks = res.data.filter(book => book.department_name === selectedDepartment);
-        setBooks(deptBooks);
-        setFilteredBooks(deptBooks);
-      })
+      .then(res => setBooks(res.data))
       .catch(err => console.error(err));
   };
 
-  const handleSearch = (e) => {
-    setSearchQuery(e.target.value);
-    const filtered = books.filter(book =>
-      book.title.toLowerCase().includes(e.target.value.toLowerCase())
-    );
-    setFilteredBooks(filtered);
+  const fetchBorrowedBooks = () => {
+    axios.get(`http://localhost:8000/api/borrowed-books/${studentID}/`)
+      .then(res => setBorrowedBooks(res.data))
+      .catch(() => setBorrowedBooks([]));
   };
 
-  const handleBookClick = (book) => {
-    setSelectedBook(book);
+  const handleLoadBook = (book) => {
+    if (!loadedBooks.find(b => b.id === book.id)) {
+      setLoadedBooks([...loadedBooks, book]);
+    }
   };
 
-  const handlePurchase = () => {
-    if (!selectedBook) return alert("Please select a book to purchase.");
-    axios.post(`http://localhost:8000/api/borrow/`, {
+  const handleBorrow = (book) => {
+    const today = new Date();
+    const borrow_date = today.toISOString().split('T')[0];
+    const due = new Date(today);
+    due.setDate(today.getDate() + 14);
+    const due_date = due.toISOString().split('T')[0];
+
+    axios.post('http://localhost:8000/api/borrow/', {
       student_id: studentID,
-      book_id: selectedBook.id
-    }).then(() => {
-      alert("✅ Book Borrowed Successfully");
-      setSelectedBook(null);
-      fetchBooks(); // refresh book list
-    }).catch(err => {
-      const error = err.response?.data?.error || '❌ Something went wrong';
-      alert(error);
-    });
+      book_id: book.id,
+      borrow_date,
+      due_date
+    })
+      .then(() => {
+        alert('✅ Book borrowed successfully');
+        fetchBooks();
+        fetchBorrowedBooks();
+        setLoadedBooks(loadedBooks.filter(b => b.id !== book.id));
+      })
+      .catch(err => {
+        const msg = err.response?.data?.error || '❌ Failed to borrow';
+        alert(msg);
+      });
   };
+
+  const calculateFine = (dueDate) => {
+    const today = new Date();
+    const due = new Date(dueDate);
+    const daysLate = Math.floor((today - due) / (1000 * 60 * 60 * 24));
+    return daysLate > 0 ? `₹${daysLate * 10}` : '₹0';
+  };
+
+  const filteredBooks = books.filter(book =>
+    book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    book.publisher_year.toString().includes(searchQuery)
+  );
 
   return (
     <div style={{ padding: '20px' }}>
-      <h2>📖 Librarian - Purchase Page</h2>
+      <h2>📘 Librarian: Borrow Books</h2>
 
+      {/* Search student */}
       <div>
         <input
           type="text"
@@ -81,13 +100,14 @@ function LibrarianPurchase() {
           value={studentID}
           onChange={(e) => setStudentID(e.target.value)}
         />
-        <button onClick={handleStudentSearch}>🔍 Search Student</button>
+        <button onClick={handleStudentSearch}>🔍 Search</button>
       </div>
 
       {message && <p style={{ color: 'red' }}>{message}</p>}
 
       {studentData && (
         <>
+          {/* Student Info */}
           <div style={{ marginTop: '20px' }}>
             <h3>🎓 Student Info</h3>
             <p><strong>ID:</strong> {studentData.student_id}</p>
@@ -96,50 +116,104 @@ function LibrarianPurchase() {
             <p><strong>Department:</strong> {studentData.department_name}</p>
           </div>
 
+          {/* Book Search */}
           <div style={{ marginTop: '20px' }}>
-            <h3>📂 Select Department</h3>
-            <select value={selectedDepartment} onChange={(e) => setSelectedDepartment(e.target.value)}>
-              <option value="">-- Choose Department --</option>
-              {departments.map(dept => (
-                <option key={dept.id} value={dept.name}>{dept.name}</option>
-              ))}
-            </select>
-            <button onClick={fetchBooks} disabled={!selectedDepartment}>📚 Load Books</button>
+            <h3>📚 Book Search</h3>
+            <input
+              type="text"
+              placeholder="Search by title, author, year"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{ width: '60%', padding: '8px' }}
+            />
+            <table border="1" cellPadding="10" style={{ width: '100%', marginTop: '10px' }}>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Author</th>
+                  <th>Year</th>
+                  <th>Available</th>
+                  <th>LoadBook</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredBooks.map(book => (
+                  <tr key={book.id}>
+                    <td>{book.title}</td>
+                    <td>{book.author}</td>
+                    <td>{book.publisher_year}</td>
+                    <td>{book.available_copies}</td>
+                    <td>
+                      <button onClick={() => handleLoadBook(book)}>📥 Load</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
+
+          {/* Loaded Books */}
+          {loadedBooks.length > 0 && (
+            <div style={{ marginTop: '20px' }}>
+              <h3>📦 Books to Borrow</h3>
+              <table border="1" cellPadding="10" style={{ width: '100%' }}>
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Year</th>
+                    <th>Due Date</th>
+                    <th>Borrow</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loadedBooks.map(book => {
+                    const due = new Date();
+                    due.setDate(due.getDate() + 14);
+                    return (
+                      <tr key={book.id}>
+                        <td>{book.title}</td>
+                        <td>{book.author}</td>
+                        <td>{book.publisher_year}</td>
+                        <td>{due.toLocaleDateString()}</td>
+                        <td>
+                          <button onClick={() => handleBorrow(book)}>✅ Borrow</button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Borrowed Book List */}
+          {borrowedBooks.length > 0 && (
+            <div style={{ marginTop: '30px' }}>
+              <h3>🧾 Already Borrowed Books</h3>
+              <table border="1" cellPadding="10" style={{ width: '100%' }}>
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Borrowed On</th>
+                    <th>Due Date</th>
+                    <th>Fine</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {borrowedBooks.map(b => (
+                    <tr key={b.id}>
+                      <td>{b.book_title}</td>
+                      <td>{b.borrow_date}</td>
+                      <td>{b.due_date}</td>
+                      <td>{calculateFine(b.due_date)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </>
-      )}
-
-      {books.length > 0 && (
-        <div style={{ marginTop: '20px' }}>
-          <h3>🔍 Search & Select Book</h3>
-          <input
-            type="text"
-            placeholder="Search books..."
-            value={searchQuery}
-            onChange={handleSearch}
-          />
-
-          <ul style={{ maxHeight: '200px', overflowY: 'auto' }}>
-            {filteredBooks.map(book => (
-              <li key={book.id} onClick={() => handleBookClick(book)} style={{
-                cursor: 'pointer',
-                backgroundColor: selectedBook?.id === book.id ? '#dff0d8' : 'transparent',
-                padding: '5px'
-              }}>
-                {book.title} ({book.available_copies} available)
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {selectedBook && (
-        <div style={{ marginTop: '20px' }}>
-          <h3>🛒 Student Purchase</h3>
-          <p><strong>Book Title:</strong> {selectedBook.title}</p>
-          <p><strong>Department:</strong> {selectedBook.department_name}</p>
-          <button onClick={handlePurchase}>✅ Confirm Borrow</button>
-        </div>
       )}
     </div>
   );

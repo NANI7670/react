@@ -17,7 +17,7 @@ function LibrarianRegister() {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8000/api/librarinregister/', formData);
+      await axios.post('http://localhost:8000/api/librarianregister/', formData);
       alert('Registered successfully!');
     } catch (err) {
       alert('Registration failed.');
