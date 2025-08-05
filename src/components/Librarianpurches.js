@@ -34,9 +34,18 @@ function LibrarianPurchase() {
   };
 
   const fetchBorrowedBooks = () => {
-    axios.get(`http://localhost:8000/api/borrowed-books/${studentID}/`)
-      .then(res => setBorrowedBooks(res.data))
-      .catch(() => setBorrowedBooks([]));
+
+    const student = JSON.parse(localStorage.getItem('student'));
+  
+    axios
+      .get(`http://localhost:8000/api/student-purchases/${student.id}/`)
+      .then((res) => {
+        setBorrowedBooks(res.data.data);
+      })
+      .catch((err) => {
+        setMessage('Failed to fetch purchase data');
+        console.error(err);
+      });
   };
 
   const handleLoadBook = (book) => {

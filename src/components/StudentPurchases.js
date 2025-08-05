@@ -5,7 +5,7 @@ import '../styles/StudentDashboard.css';
 function StudentPurchases() {
   const [purchases, setPurchases] = useState([]);
   const [error, setError] = useState('');
-  const [reviewText, setReviewText] = useState({});
+  const [reviewText, setReviewText] = useState("");
 
   useEffect(() => {
     const student = JSON.parse(localStorage.getItem('student'));
@@ -14,6 +14,8 @@ function StudentPurchases() {
       .get(`http://localhost:8000/api/student-purchases/${student.id}/`)
       .then((res) => {
         setPurchases(res.data.data);
+        console.log(res.data.data, '------res.data.data-----');
+        
       })
       .catch((err) => {
         setError('Failed to fetch purchase data');
@@ -29,15 +31,14 @@ function StudentPurchases() {
   };
 
   const submitReview = (bookId) => {
+    
     const student = JSON.parse(localStorage.getItem('student'));
-    const review = reviewText[bookId];
-    if (!review) return;
 
     axios
       .post('http://localhost:8000/api/save_book_review/', {
         book_id: bookId,
         student_id: student.id,
-        review: review,
+        review: reviewText,
       })
       .then(() => {
         alert('✅ Review submitted successfully');
@@ -84,15 +85,15 @@ function StudentPurchases() {
               <td>₹{purchase.fine}</td>
               <td>
                 <textarea
-                  value={reviewText[purchase.book_id] || ''}
-                  onChange={(e) => handleReviewChange(purchase.book_id, e.target.value)}
+                  // value={reviewText[purchase.book_id] || ''}
+                  onChange={(e) => setReviewText(e.target.value)}
                   placeholder="Write a review..."
                   rows={2}
                   style={{ width: '100%' }}
                 />
               </td>
               <td>
-                <button onClick={() => submitReview(purchase.book_id)}>Submit</button>
+                <button onClick={() => submitReview(purchase.book)}>Submit</button>
               </td>
             </tr>
           ))}

@@ -78,7 +78,7 @@ function StudentDashboard() {
     }
 
     try {
-      const response = await axios.get(`http://localhost:8000/api/save_book_review/${bookId}/`);
+      const response = await axios.get(`http://localhost:8000/api/get_book_reviews/${bookId}/`);
       setReviews((prev) => ({
         ...prev,
         [bookId]: {
@@ -130,15 +130,16 @@ function StudentDashboard() {
   const handleSendComplaint = (recipient) => {
     const student = JSON.parse(localStorage.getItem('student'));
 
-    const endpoint =
-      recipient === 'librarian'
-        ? 'http://localhost:8000/api/complaint/librarian/'
-        : 'http://localhost:8000/api/complaint/admin/';
+    // const endpoint =
+    //   recipient === 'librarian'
+    //     ? 'http://localhost:8000/api/complaint/librarian/'
+    //     : 'http://localhost:8000/api/complaint/admin/';
 
     axios
-      .post(endpoint, {
-        student_id: student.student_id,
+      .post('http://localhost:8000/api/complaint/send/', {
+        sender: student.id,
         message: complaintText,
+        sent_to: recipient
       })
       .then(() => {
         alert(`✅ Complaint sent to ${recipient}!`);
@@ -151,11 +152,11 @@ function StudentDashboard() {
   };
 
   const handleNotifyMe = (bookId, bookTitle) => {
+    const student = JSON.parse(localStorage.getItem('student'));
     axios
       .post(
         'http://localhost:8000/api/notify-request/',
-        { book: bookId },
-        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+        { book: bookId, student: student.id }
       )
       .then(() => alert(`🔔 You will be notified when '${bookTitle}' is available.`))
       .catch(() => alert('❌ Notification request failed.'));
