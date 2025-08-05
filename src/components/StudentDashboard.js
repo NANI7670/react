@@ -13,6 +13,8 @@ function StudentDashboard() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [showComplaintBox, setShowComplaintBox] = useState(false);
   const [complaintText, setComplaintText] = useState('');
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => {
     const student = JSON.parse(localStorage.getItem('student'));
@@ -30,6 +32,7 @@ function StudentDashboard() {
     }
 
     fetchDepartments();
+    fetchNotifications();
   }, []);
 
   const fetchBooks = (departmentName) => {
@@ -49,6 +52,15 @@ function StudentDashboard() {
       .catch((error) => console.error('Error fetching departments:', error));
   };
 
+  const fetchNotifications = () => {
+    axios
+      .get('http://localhost:8000/api/notifications/', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      })
+      .then((res) => setNotifications(res.data))
+      .catch((err) => console.error('Error fetching notifications:', err));
+  };
+
   const toggleFavorite = (book) => {
     const isFavorite = favorites.some((fav) => fav.id === book.id);
     const updatedFavorites = isFavorite
@@ -59,17 +71,48 @@ function StudentDashboard() {
     localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
   };
 
-  const toggleReviewVisibility = (bookId) => {
-    setVisibleReviewId((prev) => (prev === bookId ? null : bookId));
+  const toggleReviewVisibility = async (bookId) => {
+    if (visibleReviewId === bookId) {
+      setVisibleReviewId(null);
+      return;
+    }
+
+    try {
+      const response = await axios.get(`http://localhost:8000/api/save_book_review/${bookId}/`);
+      setReviews((prev) => ({
+        ...prev,
+        [bookId]: {
+          text: '',
+          all: response.data.reviews || [],
+        },
+      }));
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+      setReviews((prev) => ({
+        ...prev,
+        [bookId]: {
+          text: '',
+          all: [],
+        },
+      }));
+    }
+
+    setVisibleReviewId(bookId);
   };
 
   const handleReviewChange = (bookId, value) => {
-    setReviews((prev) => ({ ...prev, [bookId]: value }));
+    setReviews((prev) => ({
+      ...prev,
+      [bookId]: {
+        ...prev[bookId],
+        text: value,
+      },
+    }));
   };
 
   const handleSaveReview = (bookId) => {
     const student = JSON.parse(localStorage.getItem('student'));
-    const review = reviews[bookId];
+    const review = reviews[bookId]?.text;
 
     axios
       .post('http://localhost:8000/api/save_book_review/', {
@@ -77,14 +120,16 @@ function StudentDashboard() {
         student_id: student.student_id,
         review,
       })
-      .then(() => alert('✅ Review submitted successfully!'))
+      .then(() => {
+        alert('✅ Review submitted successfully!');
+        toggleReviewVisibility(bookId); // Reload reviews
+      })
       .catch(() => alert('❌ Failed to submit review.'));
   };
 
   const handleSendComplaint = (recipient) => {
     const student = JSON.parse(localStorage.getItem('student'));
 
-    // ✅ Corrected endpoint paths
     const endpoint =
       recipient === 'librarian'
         ? 'http://localhost:8000/api/complaint/librarian/'
@@ -105,13 +150,23 @@ function StudentDashboard() {
       });
   };
 
+  const handleNotifyMe = (bookId, bookTitle) => {
+    axios
+      .post(
+        'http://localhost:8000/api/notify-request/',
+        { book: bookId },
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+      )
+      .then(() => alert(`🔔 You will be notified when '${bookTitle}' is available.`))
+      .catch(() => alert('❌ Notification request failed.'));
+  };
+
   const filteredBooks = books.filter((book) =>
     book.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="student-dashboard">
-      {/* ✅ NavBar */}
       <nav className="navbar">
         <div className="navbar-title">📚 Student Dashboard</div>
         <div className="navbar-controls">
@@ -124,8 +179,9 @@ function StudentDashboard() {
           <button onClick={() => setShowFavorites(!showFavorites)}>
             ⭐ Favorites ({favorites.length})
           </button>
-          <button onClick={() => window.location.href = '/StudentProfile'}>👤 Profile</button>
-          <button onClick={() => window.location.href = '/studentpurchases'}>🛒 Purchase</button>
+          <button onClick={() => setShowNotifications(!showNotifications)}>🔔 Notifications</button>
+          <button onClick={() => (window.location.href = '/StudentProfile')}>👤 Profile</button>
+          <button onClick={() => (window.location.href = '/studentpurchases')}>🛒 Purchase</button>
           <button onClick={() => setShowComplaintBox(!showComplaintBox)}>⚠️ Complaint</button>
           <button
             onClick={() => {
@@ -139,7 +195,23 @@ function StudentDashboard() {
         </div>
       </nav>
 
-      {/* ✅ Complaint Box */}
+      {showNotifications && (
+        <div className="notification-box">
+          <h3>🔔 Notifications</h3>
+          {notifications.length > 0 ? (
+            <ul>
+              {notifications.map((note) => (
+                <li key={note.id}>
+                  📘 <strong>{note.book_name}</strong>: {note.message} <em>({new Date(note.created_at).toLocaleString()})</em>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No notifications yet.</p>
+          )}
+        </div>
+      )}
+
       {showComplaintBox && (
         <div className="complaint-box">
           <textarea
@@ -155,106 +227,67 @@ function StudentDashboard() {
         </div>
       )}
 
-      {/* ✅ Favorites Modal */}
-      {showFavorites && (
-        <div className="favorites-modal">
-          <h3>⭐ Your Favorite Books</h3>
-          {favorites.length === 0 ? (
-            <p>No favorite books yet.</p>
-          ) : (
-            <table className="book-table">
-              <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Author</th>
-                  <th>Department</th>
-                  <th>Year</th>
-                  <th>Price</th>
-                  <th>❌ Remove</th>
-                </tr>
-              </thead>
-              <tbody>
-                {favorites.map((book) => (
-                  <tr key={book.id}>
-                    <td>{book.title}</td>
-                    <td>{book.author}</td>
-                    <td>{departments.find((d) => d.id === book.department)?.name || 'Unknown'}</td>
-                    <td>{book.publish_year}</td>
-                    <td>{book.price}</td>
-                    <td>
-                      <button onClick={() => toggleFavorite(book)}>❌ Remove</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      )}
+      <div className="cards-container">
+        {filteredBooks.map((book) => (
+          <div className="book-card" key={book.id}>
+            <h3>{book.title}</h3>
+            <p><strong>Author:</strong> {book.author}</p>
+            <p><strong>Department:</strong> {departments.find((d) => d.id === book.department)?.name || 'Unknown'}</p>
+            <p><strong>Year:</strong> {book.publish_year}</p>
+            <p><strong>Price:</strong> ₹{book.price}</p>
+            <p><strong>Total:</strong> {book.total_copies}</p>
+            <p>
+              <strong>Available:</strong> {
+                book.available_copies > 0 ? (
+                  book.available_copies
+                ) : (
+                  <>
+                    <span style={{ color: 'red' }}>Stock Over</span>
+                    <br />
+                    <button onClick={() => handleNotifyMe(book.id, book.title)}>🔔 NotifyMe</button>
+                  </>
+                )
+              }
+            </p>
+            <div className="card-buttons">
+              <button onClick={() => toggleFavorite(book)}>
+                {favorites.some((fav) => fav.id === book.id)
+                  ? '💔 Remove Favorite'
+                  : '❤️ Add Favorite'}
+              </button>
+              <button onClick={() => toggleReviewVisibility(book.id)}>
+                {visibleReviewId === book.id ? '✖️ Close Review' : '📝 Review'}
+              </button>
+            </div>
 
-      {/* ✅ Book List */}
-      <div className="table-container">
-        {filteredBooks.length > 0 ? (
-          <table className="book-table">
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Author</th>
-                <th>Department</th>
-                <th>Year</th>
-                <th>Price (₹)</th>
-                <th>Total</th>
-                <th>Available</th>
-                <th>❤️</th>
-                <th>📝</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredBooks.map((book) => (
-                <React.Fragment key={book.id}>
-                  <tr>
-                    <td>{book.title}</td>
-                    <td>{book.author}</td>
-                    <td>{departments.find((d) => d.id === book.department)?.name || 'Unknown'}</td>
-                    <td>{book.publish_year}</td>
-                    <td>{book.price}</td>
-                    <td>{book.total_copies}</td>
-                    <td>{book.available_copies}</td>
-                    <td>
-                      <button onClick={() => toggleFavorite(book)}>
-                        {favorites.some((fav) => fav.id === book.id)
-                          ? '💔 Remove'
-                          : '❤️ Favorite'}
-                      </button>
-                    </td>
-                    <td>
-                      <button onClick={() => toggleReviewVisibility(book.id)}>
-                        {visibleReviewId === book.id ? '✖️ Close' : '📝 Review'}
-                      </button>
-                    </td>
-                  </tr>
-                  {visibleReviewId === book.id && (
-                    <tr>
-                      <td colSpan="9">
-                        <textarea
-                          rows="3"
-                          cols="100"
-                          value={reviews[book.id] || ''}
-                          onChange={(e) => handleReviewChange(book.id, e.target.value)}
-                          placeholder="Write your review here..."
-                        />
-                        <br />
-                        <button onClick={() => handleSaveReview(book.id)}>✅ Submit Review</button>
-                      </td>
-                    </tr>
+            {visibleReviewId === book.id && (
+              <div className="review-section">
+                <textarea
+                  rows="3"
+                  value={reviews[book.id]?.text || ''}
+                  onChange={(e) => handleReviewChange(book.id, e.target.value)}
+                  placeholder="Write your review here..."
+                />
+                <button onClick={() => handleSaveReview(book.id)}>✅ Submit Review</button>
+
+                <div className="existing-reviews">
+                  <h4>📖 Previous Reviews:</h4>
+                  {reviews[book.id]?.all?.length > 0 ? (
+                    <ul>
+                      {reviews[book.id].all.map((rev, idx) => (
+                        <li key={idx}>
+                          <strong>{rev.student_name}:</strong> {rev.review}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No reviews yet.</p>
                   )}
-                </React.Fragment>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="text-center mt-4">😞 No books found in your department.</p>
-        )}
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );

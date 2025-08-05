@@ -42,7 +42,7 @@ function LibrarianDashboard() {
       title: book.title,
       author: book.author,
       department: book.department,
-      publish_year: book.Publisher_year,
+      publisher_year: book.publisher_year,
       price: book.price,
       total_books: book.total_copies,
       available_books: book.available_copies
@@ -77,7 +77,7 @@ function LibrarianDashboard() {
   };
 
   const handleComplaintPage = () => {
-    navigate('/complaints');
+    navigate('/LibrarianComplaints');
   };
 
   const filteredBooks = books.filter(book => {
@@ -147,7 +147,7 @@ function LibrarianDashboard() {
                         ))}
                       </select>
                     </td>
-                    <td><input name="publish_year" value={editedBook.publish_year} onChange={handleEditChange} /></td>
+                    <td><input name="publish_year" value={editedBook.publisher_year} onChange={handleEditChange} /></td>
                     <td><input name="price" value={editedBook.price} onChange={handleEditChange} /></td>
                     <td><input name="total_books" value={editedBook.total_books} onChange={handleEditChange} /></td>
                     <td><input name="available_books" value={editedBook.available_books} onChange={handleEditChange} /></td>
@@ -161,7 +161,7 @@ function LibrarianDashboard() {
                     <td>{book.title}</td>
                     <td>{book.author}</td>
                     <td>{book.department}</td>
-                    <td>{book.Publisher_year}</td>
+                    <td>{book.publisher_year}</td>
                     <td>{book.price}</td>
                     <td>{book.total_copies}</td>
                     <td>{book.available_copies}</td>

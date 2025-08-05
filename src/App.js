@@ -11,6 +11,7 @@ import StudentDashboard from './components/StudentDashboard.js';
 import StudentProfile from './components/StudentProfile';
 import Librarianpurches from './components/Librarianpurches';
 import StudentPurchases from './components/StudentPurchases';
+import LibrarianComplaints from './components/LibrarianComplaints';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
        <Route path="/studentprofile" element={<StudentProfile />} />
        <Route path="/librarianpurches/:id" element={<Librarianpurches />} />
        <Route path="/studentpurchases" element={<StudentPurchases />} />
+       <Route path="/LibrarianComplaints" element={<LibrarianComplaints />} />
     </Routes>
   );
 }

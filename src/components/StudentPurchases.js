@@ -11,7 +11,7 @@ function StudentPurchases() {
     const student = JSON.parse(localStorage.getItem('student'));
 
     axios
-      .get(`http://localhost:8000/api/student-purchases/${student.id}/`,)
+      .get(`http://localhost:8000/api/student-purchases/${student.id}/`)
       .then((res) => {
         setPurchases(res.data.data);
       })
@@ -21,22 +21,27 @@ function StudentPurchases() {
       });
   }, []);
 
-  const handleReviewChange = (purchaseId, text) => {
+  const handleReviewChange = (bookId, text) => {
     setReviewText((prev) => ({
       ...prev,
-      [purchaseId]: text,
+      [bookId]: text,
     }));
   };
 
-  const submitReview = (purchaseId) => {
-    const review = reviewText[purchaseId];
+  const submitReview = (bookId) => {
+    const student = JSON.parse(localStorage.getItem('student'));
+    const review = reviewText[bookId];
     if (!review) return;
 
     axios
-      .post(`http://localhost:8000/api/student-purchases/${purchaseId}/review/`, { review })
+      .post('http://localhost:8000/api/save_book_review/', {
+        book_id: bookId,
+        student_id: student.id,
+        review: review,
+      })
       .then(() => {
         alert('✅ Review submitted successfully');
-        setReviewText((prev) => ({ ...prev, [purchaseId]: '' }));
+        setReviewText((prev) => ({ ...prev, [bookId]: '' }));
       })
       .catch((err) => {
         console.error('Review submission error:', err);
@@ -66,7 +71,7 @@ function StudentPurchases() {
         <tbody>
           {purchases.map((purchase) => (
             <tr key={purchase.id}>
-              <td>{purchase.book_name}</td>
+              <td>{purchase.book_title}</td>
               <td>{purchase.book_author}</td>
               <td>{purchase.book_department}</td>
               <td>{new Date(purchase.purchase_date).toLocaleDateString()}</td>
@@ -79,14 +84,15 @@ function StudentPurchases() {
               <td>₹{purchase.fine}</td>
               <td>
                 <textarea
-                  value={reviewText[purchase.id] || ''}
-                  onChange={(e) => handleReviewChange(purchase.id, e.target.value)}
+                  value={reviewText[purchase.book_id] || ''}
+                  onChange={(e) => handleReviewChange(purchase.book_id, e.target.value)}
                   placeholder="Write a review..."
                   rows={2}
+                  style={{ width: '100%' }}
                 />
               </td>
               <td>
-                <button onClick={() => submitReview(purchase.id)}>Submit Review</button>
+                <button onClick={() => submitReview(purchase.book_id)}>Submit</button>
               </td>
             </tr>
           ))}

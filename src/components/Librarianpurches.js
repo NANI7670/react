@@ -172,7 +172,12 @@ function LibrarianPurchase() {
                         <td>{book.publisher_year}</td>
                         <td>{due.toLocaleDateString()}</td>
                         <td>
-                          <button onClick={() => handleBorrow(book)}>✅ Borrow</button>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                            <button onClick={() => handleBorrow(book)}>✅ Borrow</button>
+                            <button onClick={() =>
+                              setLoadedBooks(loadedBooks.filter(b => b.id !== book.id))
+                            }>❌ Remove</button>
+                          </div>
                         </td>
                       </tr>
                     );
