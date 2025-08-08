@@ -86,6 +86,16 @@ function LibrarianDashboard() {
     return matchesDept && matchesSearch;
   });
 
+  function handleDepartmentClick(e) {
+    console.log(e.target.value);
+    axios.get(`http://localhost:8000/api/books-by-department/${e.target.value}/`)
+      .then(res => setBooks(res.data.data))
+      .catch(err => console.error('Error fetching departments:', err));
+
+    setSelectedDept(e.target.value)
+    
+  }
+
   return (
     <div className="librarian-dashboard">
       {/* Navbar */}
@@ -99,7 +109,7 @@ function LibrarianDashboard() {
 
         <select
           value={selectedDept}
-          onChange={(e) => setSelectedDept(e.target.value)}
+          onChange={(e) => handleDepartmentClick(e)}
         >
           <option value="">All Departments</option>
           {departments.map((dept, index) => (
@@ -131,10 +141,10 @@ function LibrarianDashboard() {
         </thead>
 
         <tbody>
-          {filteredBooks.length === 0 ? (
+          {books.length === 0 ? (
             <tr><td colSpan="8">No books found</td></tr>
           ) : (
-            filteredBooks.map(book => (
+            books.map(book => (
               <tr key={book.id}>
                 {editRowId === book.id ? (
                   <>
