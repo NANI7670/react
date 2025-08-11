@@ -75,10 +75,10 @@ function StudentPurchases() {
               <td>{purchase.book_title}</td>
               <td>{purchase.book_author}</td>
               <td>{purchase.book_department}</td>
-              <td>{new Date(purchase.purchase_date).toLocaleDateString()}</td>
+              <td>{purchase.purchase_date}</td>
               <td>
-                {purchase.submitted && purchase.submit_date
-                  ? new Date(purchase.submit_date).toLocaleDateString()
+                {purchase.submit_date
+                  ? purchase.submit_date
                   : 'Not Returned'}
               </td>
               <td>{purchase.submitted ? '✅ Returned' : '📚 Not Returned'}</td>

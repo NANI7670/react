@@ -53,11 +53,13 @@ function StudentDashboard() {
   };
 
   const fetchNotifications = () => {
+    
+    const student = JSON.parse(localStorage.getItem('student'));
     axios
-      .get('http://localhost:8000/api/notifications/', {
+      .get(`http://localhost:8000/api/notifications/${student.id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       })
-      .then((res) => setNotifications(res.data))
+      .then((res) => setNotifications(res.data.data))
       .catch((err) => console.error('Error fetching notifications:', err));
   };
 

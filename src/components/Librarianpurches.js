@@ -34,9 +34,7 @@ function LibrarianPurchase() {
   };
 
   const fetchBorrowedBooks = () => {
-
     const student = JSON.parse(localStorage.getItem('student'));
-  
     axios
       .get(`http://localhost:8000/api/student-purchases/${student.id}/`)
       .then((res) => {
@@ -76,6 +74,35 @@ function LibrarianPurchase() {
       .catch(err => {
         const msg = err.response?.data?.error || '❌ Failed to borrow';
         alert(msg);
+      });
+  };
+
+  // ✅ Pay Fine
+  const handlePayFine = (purchaseId) => {
+    if (!window.confirm("Are you sure you want to mark the fine as paid?")) return;
+
+    axios.post(`http://localhost:8000/api/pay-fine/${purchaseId}/`)
+      .then(() => {
+        alert("✅ Fine cleared");
+        fetchBorrowedBooks();
+      })
+      .catch(err => {
+        console.error(err);
+        alert("❌ Failed to clear fine");
+      });
+  };
+
+  // ✅ Return Book
+  const handleReturnBook = (purchaseId, bookId) => {
+    axios.post(`http://localhost:8000/api/return-book/${purchaseId}/`, { book_id: bookId })
+      .then(() => {
+        alert("✅ Book returned successfully");
+        fetchBooks();
+        fetchBorrowedBooks();
+      })
+      .catch(err => {
+        console.error(err);
+        alert("❌ Failed to return book");
       });
   };
 
@@ -207,6 +234,7 @@ function LibrarianPurchase() {
                     <th>Borrowed On</th>
                     <th>Due Date</th>
                     <th>Fine</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -215,7 +243,18 @@ function LibrarianPurchase() {
                       <td>{b.book_title}</td>
                       <td>{b.borrow_date}</td>
                       <td>{b.due_date}</td>
-                      <td>{calculateFine(b.due_date)}</td>
+                      <td>
+                        {b.fine}/-
+                        <button 
+                          style={{ marginLeft: "5px" }} 
+                          onClick={() => handlePayFine(b.id)}
+                        >
+                          💰 Paid
+                        </button>
+                      </td>
+                      <td>
+                        <button onClick={() => handleReturnBook(b.id, b.book)}>↩ Return Book</button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

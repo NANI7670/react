@@ -21,6 +21,7 @@ const StudentProfile = () => {
       const response = await axios.get(`http://localhost:8000/api/register/${stuId}/`);
       const data = response.data.data || response.data;  // auto-adjust if `data.data`
       setProfileData(data);
+
       setUpdatedData({
         first_name: data.first_name,
         last_name: data.last_name,
