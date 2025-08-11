@@ -73,7 +73,7 @@ function LibrarianDashboard() {
   };
 
   const handlePurchasePage = () => {
-    navigate('/librarianpurches/:id');
+    navigate('/Librarianpurches');
   };
 
   const handleComplaintPage = () => {
@@ -191,3 +191,7 @@ function LibrarianDashboard() {
 }
 
 export default LibrarianDashboard;
+
+
+
+

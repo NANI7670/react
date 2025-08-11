@@ -16,6 +16,9 @@ function StudentDashboard() {
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
 
+  // NEW: Controls dropdown for favorites in navbar
+  const [showFavoritesList, setShowFavoritesList] = useState(false);
+
   useEffect(() => {
     const student = JSON.parse(localStorage.getItem('student'));
     const storedFavorites = JSON.parse(localStorage.getItem('favorites')) || [];
@@ -53,7 +56,6 @@ function StudentDashboard() {
   };
 
   const fetchNotifications = () => {
-    
     const student = JSON.parse(localStorage.getItem('student'));
     axios
       .get(`http://localhost:8000/api/notifications/${student.id}`, {
@@ -124,18 +126,13 @@ function StudentDashboard() {
       })
       .then(() => {
         alert('✅ Review submitted successfully!');
-        toggleReviewVisibility(bookId); // Reload reviews
+        toggleReviewVisibility(bookId);
       })
       .catch(() => alert('❌ Failed to submit review.'));
   };
 
   const handleSendComplaint = (recipient) => {
     const student = JSON.parse(localStorage.getItem('student'));
-
-    // const endpoint =
-    //   recipient === 'librarian'
-    //     ? 'http://localhost:8000/api/complaint/librarian/'
-    //     : 'http://localhost:8000/api/complaint/admin/';
 
     axios
       .post('http://localhost:8000/api/complaint/send/', {
@@ -179,9 +176,30 @@ function StudentDashboard() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <button onClick={() => setShowFavorites(!showFavorites)}>
-            ⭐ Favorites ({favorites.length})
-          </button>
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => {
+                setShowFavorites(!showFavorites);
+                setShowFavoritesList(!showFavoritesList);
+              }}
+            >
+              ⭐ Favorites ({favorites.length})
+            </button>
+            {showFavoritesList && favorites.length > 0 && (
+              <div className="favorites-dropdown">
+                <ul>
+                  {favorites.map((fav) => (
+                    <li key={fav.id}>{fav.title}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {showFavoritesList && favorites.length === 0 && (
+              <div className="favorites-dropdown">
+                <p>No favorites yet.</p>
+              </div>
+            )}
+          </div>
           <button onClick={() => setShowNotifications(!showNotifications)}>🔔 Notifications</button>
           <button onClick={() => (window.location.href = '/StudentProfile')}>👤 Profile</button>
           <button onClick={() => (window.location.href = '/studentpurchases')}>🛒 Purchase</button>

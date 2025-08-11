@@ -24,6 +24,7 @@ function LibrarianPurchase() {
         setStudentData(null);
         setBorrowedBooks([]);
         setBooks([]);
+        setLoadedBooks([]);
       });
   };
 
@@ -77,7 +78,6 @@ function LibrarianPurchase() {
       });
   };
 
-  // ✅ Pay Fine
   const handlePayFine = (purchaseId) => {
     if (!window.confirm("Are you sure you want to mark the fine as paid?")) return;
 
@@ -92,7 +92,6 @@ function LibrarianPurchase() {
       });
   };
 
-  // ✅ Return Book
   const handleReturnBook = (purchaseId, bookId) => {
     axios.post(`http://localhost:8000/api/return-book/${purchaseId}/`, { book_id: bookId })
       .then(() => {
@@ -104,13 +103,6 @@ function LibrarianPurchase() {
         console.error(err);
         alert("❌ Failed to return book");
       });
-  };
-
-  const calculateFine = (dueDate) => {
-    const today = new Date();
-    const due = new Date(dueDate);
-    const daysLate = Math.floor((today - due) / (1000 * 60 * 60 * 24));
-    return daysLate > 0 ? `₹${daysLate * 10}` : '₹0';
   };
 
   const filteredBooks = books.filter(book =>
@@ -147,43 +139,46 @@ function LibrarianPurchase() {
             <p><strong>Department:</strong> {studentData.department_name}</p>
           </div>
 
-          {/* Book Search */}
-          <div style={{ marginTop: '20px' }}>
-            <h3>📚 Book Search</h3>
-            <input
-              type="text"
-              placeholder="Search by title, author, year"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{ width: '60%', padding: '8px' }}
-            />
-            <table border="1" cellPadding="10" style={{ width: '100%', marginTop: '10px' }}>
-              <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Author</th>
-                  <th>Year</th>
-                  <th>Available</th>
-                  <th>LoadBook</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredBooks.map(book => (
-                  <tr key={book.id}>
-                    <td>{book.title}</td>
-                    <td>{book.author}</td>
-                    <td>{book.publisher_year}</td>
-                    <td>{book.available_copies}</td>
-                    <td>
-                      <button onClick={() => handleLoadBook(book)}>📥 Load</button>
-                    </td>
+          {/* Borrowed Book List - Moved under Student Info */}
+          {borrowedBooks.length > 0 && (
+            <div style={{ marginTop: '20px' }}>
+              <h3>🧾 Already Borrowed Books</h3>
+              <table border="1" cellPadding="10" style={{ width: '100%' }}>
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Borrowed On</th>
+                    <th>Due Date</th>
+                    <th>Fine</th>
+                    <th>Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {borrowedBooks.map(b => (
+                    <tr key={b.id}>
+                      <td>{b.book_title}</td>
+                      <td>{b.borrow_date}</td>
+                      <td>{b.due_date}</td>
+                      <td>
+                        {b.fine}/-
+                        <button 
+                          style={{ marginLeft: "5px" }} 
+                          onClick={() => handlePayFine(b.id)}
+                        >
+                          💰 Paid
+                        </button>
+                      </td>
+                      <td>
+                        <button onClick={() => handleReturnBook(b.id, b.book)}>↩ Return Book</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
 
-          {/* Loaded Books */}
+          {/* Loaded Books Table */}
           {loadedBooks.length > 0 && (
             <div style={{ marginTop: '20px' }}>
               <h3>📦 Books to Borrow</h3>
@@ -223,44 +218,41 @@ function LibrarianPurchase() {
             </div>
           )}
 
-          {/* Borrowed Book List */}
-          {borrowedBooks.length > 0 && (
-            <div style={{ marginTop: '30px' }}>
-              <h3>🧾 Already Borrowed Books</h3>
-              <table border="1" cellPadding="10" style={{ width: '100%' }}>
-                <thead>
-                  <tr>
-                    <th>Title</th>
-                    <th>Borrowed On</th>
-                    <th>Due Date</th>
-                    <th>Fine</th>
-                    <th>Action</th>
+          {/* Book Search */}
+          <div style={{ marginTop: '20px' }}>
+            <h3>📚 Book Search</h3>
+            <input
+              type="text"
+              placeholder="Search by title, author, year"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{ width: '60%', padding: '8px' }}
+            />
+            <table border="1" cellPadding="10" style={{ width: '100%', marginTop: '10px' }}>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Author</th>
+                  <th>Year</th>
+                  <th>Available</th>
+                  <th>LoadBook</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredBooks.map(book => (
+                  <tr key={book.id}>
+                    <td>{book.title}</td>
+                    <td>{book.author}</td>
+                    <td>{book.publisher_year}</td>
+                    <td>{book.available_copies}</td>
+                    <td>
+                      <button onClick={() => handleLoadBook(book)}>📥 Load</button>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {borrowedBooks.map(b => (
-                    <tr key={b.id}>
-                      <td>{b.book_title}</td>
-                      <td>{b.borrow_date}</td>
-                      <td>{b.due_date}</td>
-                      <td>
-                        {b.fine}/-
-                        <button 
-                          style={{ marginLeft: "5px" }} 
-                          onClick={() => handlePayFine(b.id)}
-                        >
-                          💰 Paid
-                        </button>
-                      </td>
-                      <td>
-                        <button onClick={() => handleReturnBook(b.id, b.book)}>↩ Return Book</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                ))}
+              </tbody>
+            </table>
+          </div>
         </>
       )}
     </div>

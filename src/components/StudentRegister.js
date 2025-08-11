@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
-
+import '../styles/StudentForm.css';
 
 
 function StudentRegister() {
@@ -74,96 +74,104 @@ function StudentRegister() {
     }
   };
 
-  return (
-    <div className="container mt-5" style={{ maxWidth: '500px' }}>
-      <h2 className="mb-4">Student Register</h2>
-      {error && <p className="text-danger">{error}</p>}
-      {success && <p className="text-success">{success}</p>}
-      <form onSubmit={handleSubmit}>
-        <div className="form-group mb-2">
-          <label>First Name</label>
-          <input
-            type="text"
-            name="first_name"
-            className="form-control"
-            value={formData.first_name}
-            onChange={handleChange}
-            required
-          />
-        </div>
+ return (
+  <div className="register-page">
+    <div className="register-card">
+      <div className="image-section">
+        {/* Optional: You can add an <img> tag here if needed */}
+      </div>
+      <div className="form-section">
+        <h2>Student Register</h2>
+        {error && <p className="text-danger">{error}</p>}
+        {success && <p className="text-success">{success}</p>}
 
-        <div className="form-group mb-2">
-          <label>Last Name</label>
-          <input
-            type="text"
-            name="last_name"
-            className="form-control"
-            value={formData.last_name}
-            onChange={handleChange}
-            required
-          />
-        </div>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>First Name</label>
+            <input
+              type="text"
+              name="first_name"
+              className="form-control"
+              value={formData.first_name}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-        <div className="form-group mb-2">
-          <label>Email</label>
-          <input
-            type="email"
-            name="email"
-            className="form-control"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-        </div>
+          <div className="form-group">
+            <label>Last Name</label>
+            <input
+              type="text"
+              name="last_name"
+              className="form-control"
+              value={formData.last_name}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-        <div className="form-group mb-2">
-          <label>Department</label>
-          <select
-            name="department"
-            className="form-control"
-            value={formData.department}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Department</option>
-            {departments.map((dept) => (
-              <option key={dept.id} value={dept.name}>{dept.name}</option>
-            ))}
-          </select>
-        </div>
+          <div className="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              name="email"
+              className="form-control"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-        <div className="form-group mb-2">
-          <label>Password</label>
-          <input
-            type="password"
-            name="password"
-            className="form-control"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-        </div>
+          <div className="form-group">
+            <label>Department</label>
+            <select
+              name="department"
+              className="form-control"
+              value={formData.department}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Department</option>
+              {departments.map((dept) => (
+                <option key={dept.id} value={dept.name}>{dept.name}</option>
+              ))}
+            </select>
+          </div>
 
-        <div className="form-group mb-3">
-          <label>Confirm Password</label>
-          <input
-            type="password"
-            name="confirmPassword"
-            className="form-control"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            required
-          />
-        </div>
+          <div className="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              name="password"
+              className="form-control"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-        <button type="submit" className="btn btn-primary w-100">Register</button>
-      </form>
+          <div className="form-group">
+            <label>Confirm Password</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              className="form-control"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-      <p className="mt-3 text-center">
-        Already registered? <Link to="/studentlogin">Login</Link>
-      </p>
+          <button type="submit" className="btn btn-primary w-100">Register</button>
+        </form>
+
+        <p className="mt-3 text-center">
+          Already registered? <Link to="/studentlogin">Login</Link>
+        </p>
+      </div>
     </div>
-  );
+  </div>
+);
 }
 
 export default StudentRegister;

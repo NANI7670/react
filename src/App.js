@@ -1,4 +1,3 @@
-// App.js ✅ FIXED
 import { Routes, Route } from 'react-router-dom';
 import LibrarianLogin from './components/LibrarianLogin';
 import LibrarianRegister from './components/LibrarianRegister';
@@ -7,7 +6,7 @@ import BookForm from './components/BookForm';
 import BookList from './components/BookList';
 import StudentRegister from './components/StudentRegister';
 import StudentLogin from './components/StudentLogin';
-import StudentDashboard from './components/StudentDashboard.js';
+import StudentDashboard from './components/StudentDashboard';
 import StudentProfile from './components/StudentProfile';
 import Librarianpurches from './components/Librarianpurches';
 import StudentPurchases from './components/StudentPurchases';
@@ -23,11 +22,11 @@ function App() {
       <Route path="/books" element={<BookList />} />
       <Route path="/studentregister" element={<StudentRegister />} />
       <Route path="/studentlogin" element={<StudentLogin />} />
-       <Route path="/studentdashboard" element={<StudentDashboard />} />
-       <Route path="/studentprofile" element={<StudentProfile />} />
-       <Route path="/librarianpurches/:id" element={<Librarianpurches />} />
-       <Route path="/studentpurchases" element={<StudentPurchases />} />
-       <Route path="/LibrarianComplaints" element={<LibrarianComplaints />} />
+      <Route path="/studentdashboard" element={<StudentDashboard />} />
+      <Route path="/studentprofile" element={<StudentProfile />} />
+      <Route path="/Librarianpurches" element={<Librarianpurches />} />
+      <Route path="/studentpurchases" element={<StudentPurchases />} />
+      <Route path="/LibrarianComplaints" element={<LibrarianComplaints />} />
     </Routes>
   );
 }

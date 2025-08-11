@@ -1,102 +1,66 @@
-/* src/styles/LibrarianForm.css */
+/* LibrarianRegister.css */
+.register-page {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Segoe UI', sans-serif;
+}
 
-body {
-    margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: url('/public/images/piclumen-1752324411644.png') no-repeat center center fixed;
-    background-size: cover;
-  }
-  
-  .register-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
-  }
-  
-  .register-box {
-    background: rgba(255, 255, 255, 0.97);
-    padding: 40px 30px;
-    border-radius: 15px;
-    box-shadow: 0 0 25px rgba(0, 0, 0, 0.2);
-    width: 100%;
-    max-width: 420px;
-    animation: fadeInSlide 1s ease-in-out;
-    position: relative;
-    z-index: 2;
-  }
-  
-  @keyframes fadeInSlide {
-    from {
-      opacity: 0;
-      transform: translateY(-40px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  .register-box h2 {
-    text-align: center;
-    margin-bottom: 25px;
-    color: #4a148c;
-  }
-  
-  .register-box form {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .register-box input {
-    width: 100%;
-    padding: 14px;
-    margin-bottom: 18px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 15px;
-    background-color: #f9f9f9;
-    transition: all 0.3s ease;
-  }
-  
-  .register-box input:focus {
-    border-color: #7b1fa2;
-    background: #fff;
-    outline: none;
-    box-shadow: 0 0 8px rgba(123, 31, 162, 0.4);
-  }
-  
-  .register-box button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 8px;
-    font-size: 16px;
-    font-weight: bold;
-    color: white;
-    background: linear-gradient(to right, #7b1fa2, #6a1b9a);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.3s ease;
-  }
-  
-  .register-box button:hover {
-    background: linear-gradient(to right, #6a1b9a, #4a148c);
-    transform: translateY(-2px);
-  }
-  
-  @media (max-width: 480px) {
-    .register-box {
-      padding: 25px 20px;
-    }
-  
-    .register-box input {
-      font-size: 14px;
-    }
-  
-    .register-box button {
-      font-size: 15px;
-    }
-  }
-  
+.register-container {
+  width: 420px;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.register-right h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: azure;
+}
+
+.register-right input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.register-right button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(to right, #6a11cb, #2575fc);
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.register-right button:hover {
+  background: linear-gradient(to right, #2575fc, #6a11cb);
+}
+
+.register-right p {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.register-right a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.register-right a:hover {
+  text-decoration: underline;
+}

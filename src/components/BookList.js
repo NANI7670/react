@@ -10,6 +10,8 @@ function BookList() {
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [editingBookId, setEditingBookId] = useState(null);
   const [editData, setEditData] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const booksPerPage = 5;
   const navigate = useNavigate();
 
   const fetchBooks = () => {
@@ -61,12 +63,24 @@ function BookList() {
     }
   };
 
-  // ✅ Filter books by title and department
+  // Filter books by title and department
   const filteredBooks = books.filter(book =>
     (book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (book.department_name || '').toLowerCase().includes(searchTerm.toLowerCase())) &&
+      (book.department_name || '').toLowerCase().includes(searchTerm.toLowerCase())) &&
     (selectedDepartment === '' || book.department === parseInt(selectedDepartment))
   );
+
+  // Pagination logic
+  const indexOfLast = currentPage * booksPerPage;
+  const indexOfFirst = indexOfLast - booksPerPage;
+  const currentBooks = filteredBooks.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(filteredBooks.length / booksPerPage);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
 
   return (
     <div className="book-list-container">
@@ -80,7 +94,6 @@ function BookList() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
 
-          {/* ✅ Department filter dropdown */}
           <select
             value={selectedDepartment}
             onChange={(e) => setSelectedDepartment(e.target.value)}
@@ -105,10 +118,10 @@ function BookList() {
           </tr>
         </thead>
         <tbody>
-          {filteredBooks.length === 0 ? (
+          {currentBooks.length === 0 ? (
             <tr><td colSpan="8">No books found.</td></tr>
           ) : (
-            filteredBooks.map(book => (
+            currentBooks.map(book => (
               editingBookId === book.id ? (
                 <tr key={book.id}>
                   <td><input name="title" value={editData.title} onChange={handleEditChange} /></td>
@@ -148,6 +161,21 @@ function BookList() {
           )}
         </tbody>
       </table>
+
+      {/* Pagination Controls */}
+      <div className="pagination">
+        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>‹ Prev</button>
+        {[...Array(totalPages)].map((_, i) => (
+          <button
+            key={i + 1}
+            className={currentPage === i + 1 ? 'active' : ''}
+            onClick={() => handlePageChange(i + 1)}
+          >
+            {i + 1}
+          </button>
+        ))}
+        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>Next ›</button>
+      </div>
     </div>
   );
 }

@@ -1,153 +1,182 @@
-/* ==== Overall Layout ==== */
-.student-dashboard {
+/* ====== GLOBAL STYLES ====== */
+body {
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   background-color: #f5f7fa;
-  min-height: 100vh;
-  padding: 20px;
-  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #333;
 }
 
-/* ==== Navbar ==== */
+/* ====== NAVBAR ====== */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #ffffff;
-  padding: 16px 24px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  margin-bottom: 30px;
+  background: #1e293b;
+  color: white;
+  padding: 12px 24px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-.navbar input[type="text"] {
-  padding: 8px 14px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  margin-right: 12px;
+.navbar-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.navbar-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar-controls input {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  font-size: 0.9rem;
 }
 
 .navbar-controls button {
-  background-color: #eaf0ff;
-  color: #1a237e;
+  background-color: #3b82f6;
+  color: white;
   border: none;
-  padding: 8px 14px;
-  margin-left: 8px;
-  border-radius: 10px;
+  padding: 6px 12px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  font-size: 0.85rem;
+  transition: background-color 0.3s ease;
 }
 
 .navbar-controls button:hover {
-  background-color: #d0e2ff;
+  background-color: #2563eb;
 }
 
-/* ==== Complaint Box ==== */
-.complaint-box {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 12px;
+/* ====== NOTIFICATION BOX ====== */
+.notification-box {
+  background: white;
+  margin: 20px auto;
   padding: 16px;
-  margin-bottom: 24px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  max-width: 800px;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* ==== Book Card Container ==== */
-.cards-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
+.notification-box h3 {
+  margin-top: 0;
 }
 
-/* ==== Book Card ==== */
-.book-card {
-  background-color: #ffffff;
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  animation: fadeInUp 0.4s ease;
-  border: 1px solid #f0f0f0;
+.notification-box ul {
+  padding-left: 18px;
 }
 
-.book-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.08);
-}
-
-/* ==== Typography ==== */
-.book-card h3 {
-  font-size: 20px;
-  color: #2c3e50;
+.notification-box li {
   margin-bottom: 8px;
 }
 
-.book-card p {
-  font-size: 14px;
-  color: #555;
-  margin: 6px 0;
+/* ====== COMPLAINT BOX ====== */
+.complaint-box {
+  background: white;
+  padding: 16px;
+  margin: 20px auto;
+  max-width: 800px;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* ==== Buttons in Card ==== */
-.card-buttons button {
+.complaint-box textarea {
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  padding: 8px;
+  resize: none;
+}
+
+.complaint-box button {
   margin-top: 10px;
-  margin-right: 10px; 
-  padding: 8px 14px;
-  background-color: #e8f0fe;
+  margin-right: 8px;
+  padding: 6px 12px;
+  background-color: #ef4444;
+  color: white;
   border: none;
-  border-radius: 8px;
-  color: #1a237e;
-  font-weight: 500;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background 0.2s;
+}
+
+.complaint-box button:hover {
+  background-color: #dc2626;
+}
+
+/* ====== CARDS CONTAINER ====== */
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 16px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .cards-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+@media (max-width: 640px) {
+  .cards-container {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+/* ====== BOOK CARD ====== */
+.book-card {
+  background: white;
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.book-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.book-card h3 {
+  margin-top: 0;
+  font-size: 1.3rem;
+  line-height: 1.5;
+  color: #1e293b;
+}
+
+.book-card p {
+  margin: 4px 0;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* ====== CARD BUTTONS ====== */
+.card-buttons {
+  margin-top: 10px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.card-buttons button {
+  flex: 1;
+  padding: 8px;
+  background-color: #0ea5e9;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .card-buttons button:hover {
-  background-color: #d2e3fc;
-}
-
-/* ==== Review Section ==== */
-.review-section textarea {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  resize: vertical;
-}
-
-.review-section button {
-  margin-top: 10px;
-  padding: 8px 14px;
-  background-color: #c5e1a5;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.review-section button:hover {
-  background-color: #aed581;
-}
-
-/* ==== No Books Message ==== */
-.text-center {
-  text-align: center;
-}
-
-.mt-4 {
-  margin-top: 2rem;
-}
-
-/* ==== Animation ==== */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  background-color: #0284c7;
 }
